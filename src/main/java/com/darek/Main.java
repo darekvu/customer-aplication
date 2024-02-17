@@ -2,6 +2,7 @@ package com.darek;
 
 import com.darek.customer.Customer;
 import com.darek.customer.CustomerRepository;
+import com.github.javafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,9 +21,13 @@ public class Main {
     CommandLineRunner runner(CustomerRepository customerRepository) {
 
         return args -> {
-            Customer alex = new Customer("Alex", "alex@gmail.com", 46);
-            Customer kamila = new Customer("Kamila", "kamila@gmail.com", 20);
-            List<Customer> customers = List.of(alex, kamila);
+            Faker faker = new Faker();
+            String name = faker.name().firstName();
+            String email = faker.internet().emailAddress() + "@gmail.com";
+            int age = faker.number().numberBetween(1,120);
+            Customer customer1 = new Customer(name,email,age);
+            Customer customer2 = new Customer(name,email,age);
+            List<Customer> customers = List.of(customer1, customer2);
 //            customerRepository.saveAll(customers);
         };
     }

@@ -4,23 +4,34 @@ import jakarta.persistence.*;
 
 import java.util.Objects;
 @Entity
+@Table(
+        name = "customer",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "customer_email_unique",
+                        columnNames = "email"
+                )
+        }
+)
 public class Customer {
     @Id
     @SequenceGenerator(
-            name = "customer_id_sequence",
-            sequenceName = "customer_id_sequence"
+            name = "customer_id_seq",
+            sequenceName = "customer_id_seq",
+            allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "customer_id_sequence"
+            generator = "customer_id_seq"
     )
-    private Integer Id;
+    private Long id;
     @Column(
             nullable = false
     )
     private String name;
     @Column(
-            nullable = false
+            nullable = false,
+            unique = true
     )
 
     private String email;
@@ -32,8 +43,8 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(Integer id, String name, String email, Integer age) {
-        Id = id;
+    public Customer(Long id, String name, String email, Integer age) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.age = age;
@@ -45,12 +56,12 @@ public class Customer {
         this.age = age;
     }
 
-    public Integer getId() {
-        return Id;
+    public Long getId() {
+        return id;
     }
 
-    public void setId(Integer id) {
-        Id = id;
+    public void setId(Long id) {
+        id = id;
     }
 
     public String getName() {
@@ -68,7 +79,7 @@ public class Customer {
 
         Customer customer = (Customer) o;
 
-        if (!Objects.equals(Id, customer.Id)) return false;
+        if (!Objects.equals(id, customer.id)) return false;
         if (!Objects.equals(name, customer.name)) return false;
         if (!Objects.equals(email, customer.email)) return false;
         return Objects.equals(age, customer.age);
@@ -76,7 +87,7 @@ public class Customer {
 
     @Override
     public int hashCode() {
-        int result = Id != null ? Id.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (age != null ? age.hashCode() : 0);
@@ -102,7 +113,7 @@ public class Customer {
     @Override
     public String toString() {
         return "Customer{" +
-                "Id=" + Id +
+                "Id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", age=" + age +
