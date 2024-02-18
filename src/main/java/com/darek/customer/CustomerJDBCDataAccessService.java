@@ -30,16 +30,17 @@ public class CustomerJDBCDataAccessService implements CustomerDao {
 //            );
 //            return customer;
 //        });
-        return jdbcTemplate.query(sql,customerRowMapper);
+        return jdbcTemplate.query(sql, customerRowMapper);
     }
 
     @Override
     public Optional<Customer> selectCustomerById(Long id) {
-//        var sql = """
-//                SELECT * FROM customer
-//                WHERE id = "?"
-//                """;
-        return Optional.empty();
+        var sql = """
+                SELECT id,name,email,age FROM customer WHERE id = ?
+                    """;
+        return jdbcTemplate.query(sql, customerRowMapper, id)
+                .stream()
+                .findFirst();
     }
 
     @Override
@@ -54,18 +55,27 @@ public class CustomerJDBCDataAccessService implements CustomerDao {
                 customer.getEmail(),
                 customer.getAge());
 
-        System.out.println("jdbcTemplate.update = "+result);
+        System.out.println("jdbcTemplate.update = " + result);
 
     }
 
     @Override
     public boolean existsPersonWithEmail(String email) {
+        var sql = """
+                SELECT count(*)
+                FROM customer
+                where email = ?
+                """;
         return false;
     }
 
     @Override
     public void deleteCustomer(Long id) {
-
+        var sql = """
+                DELETE from customer
+                WHERE id = ?
+                """;
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
@@ -75,6 +85,13 @@ public class CustomerJDBCDataAccessService implements CustomerDao {
 
     @Override
     public void updateCustomer(Customer update) {
-
+        var sql = """
+                UPDATE customer
+                SET name = ?,
+                email = ?,
+                 age = ?
+                WHERE id= ?;
+                """;
+        jdbcTemplate.update(sql, update.getName(), update.getEmail(), update.getAge(),update.getId());
     }
 }
