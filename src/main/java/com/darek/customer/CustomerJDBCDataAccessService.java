@@ -62,20 +62,21 @@ public class CustomerJDBCDataAccessService implements CustomerDao {
     @Override
     public boolean existsPersonWithEmail(String email) {
         var sql = """
-                SELECT count(*)
+                SELECT COUNT(id)
                 FROM customer
-                where email = ?
+                WHERE email = ?
                 """;
-        return false;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
+        return count != null && count > 0;
     }
 
     @Override
-    public void deleteCustomer(Long id) {
+    public void deleteCustomer(Long customerId) {
         var sql = """
                 DELETE from customer
                 WHERE id = ?
                 """;
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, customerId);
     }
 
     @Override
@@ -85,13 +86,22 @@ public class CustomerJDBCDataAccessService implements CustomerDao {
 
     @Override
     public void updateCustomer(Customer update) {
-        var sql = """
-                UPDATE customer
-                SET name = ?,
-                email = ?,
-                 age = ?
-                WHERE id= ?;
-                """;
-        jdbcTemplate.update(sql, update.getName(), update.getEmail(), update.getAge(),update.getId());
+//
+        if (update.getName() != null) {
+            String sql = "UPDATE customer SET name = ? WHERE id =?";
+            int result = jdbcTemplate.update(sql, update.getName(), update.getId());
+            System.out.println("Updated name result: " + result);
+        }
+
+        if (update.getEmail() != null) {
+            String sql = "UPDATE customer SET email = ? WHERE id =?";
+            int result = jdbcTemplate.update(sql, update.getEmail(), update.getId());
+            System.out.println("Updated email result: " + result);
+        }
+        if (update.getAge() != null) {
+            String sql = "UPDATE customer SET age = ? WHERE id =?";
+            int result = jdbcTemplate.update(sql, update.getAge(), update.getId());
+            System.out.println("Updated age result: " + result);
+        }
     }
 }
