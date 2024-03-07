@@ -1,6 +1,8 @@
 package com.darek.customer;
 
 import com.darek.AbstractTestContainers;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +23,7 @@ class CustomerJDBCDataAccessServiceTest extends AbstractTestContainers {
                 customerRowMapper
         );
     }
+
 
     @Test
     void selectAllCustomers() {
@@ -85,10 +88,15 @@ class CustomerJDBCDataAccessServiceTest extends AbstractTestContainers {
         );
         // When
         underTest.insertCustomer(customer);
+        Long id = underTest.selectAllCustomers()
+                .stream()
+                .filter(c -> c.getEmail().equals(email))
+                .map(c -> c.getId())
+                .findFirst()
+                .orElseThrow();
         // Then
-        List<Customer> customers = underTest.selectAllCustomers();
-//        assertEquals(1,customers.size());
-        assertThat(customers.size()).isEqualTo(1);
+        Optional<Customer> actual = underTest.selectCustomerById(id);
+        assertThat(actual).isPresent();
     }
 
     @Test
