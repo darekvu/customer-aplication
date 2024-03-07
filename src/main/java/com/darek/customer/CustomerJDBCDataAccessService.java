@@ -81,12 +81,18 @@ public class CustomerJDBCDataAccessService implements CustomerDao {
 
     @Override
     public boolean existsPersonWithId(Long id) {
-        return false;
+        var sql = """
+                SELECT count(name)
+                FROM customer
+                WHERE id = ?
+                """;
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, id);
+        return count != null && count > 0;
     }
 
     @Override
     public void updateCustomer(Customer update) {
-//
+
         if (update.getName() != null) {
             String sql = "UPDATE customer SET name = ? WHERE id =?";
             int result = jdbcTemplate.update(sql, update.getName(), update.getId());
