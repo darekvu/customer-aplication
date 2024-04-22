@@ -34,7 +34,7 @@ public class CustomerIntegrationTest {
          */
         Faker faker = new Faker();
         String name = faker.name().firstName();
-        String email = name+ "foobarrrrrrrrrrrrrrr@gmail.com"+ UUID.randomUUID();
+        String email = name + "foobarrrrrrrrrrrrrrr@gmail.com" + UUID.randomUUID();
         int age = RANDOM.nextInt(1, 100);
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(name, email, age);
         String CUSTOMER_URI = "/api/v1/customers";
@@ -80,5 +80,56 @@ public class CustomerIntegrationTest {
                 .expectBody(new ParameterizedTypeReference<Customer>() {
                 })
                 .isEqualTo(expectedCustomer);
+    }
+
+    @Test
+    void canDeleteCustomer() {
+        // Given
+        Faker faker = new Faker();
+        String name = faker.name().firstName();
+        String email = name + "foobar@gmail.com" + UUID.randomUUID();
+        int age = RANDOM.nextInt(1, 100);
+        CustomerRegistrationRequest request = new CustomerRegistrationRequest(name, email, age);
+        String CUSTOMER_URI = "/api/v1/customers";
+        webTestClient.post()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(request), CustomerRegistrationRequest.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        List<Customer> allCustomers = webTestClient.get()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(new ParameterizedTypeReference<Customer>() {
+                })
+                .returnResult()
+                .getResponseBody();
+
+
+        Long id = allCustomers.stream()
+                .filter(customer -> customer.getEmail().equals(email))
+                .map(Customer::getId)
+                .findFirst()
+                .orElseThrow();
+
+        webTestClient.delete()
+                .uri(CUSTOMER_URI + "/{id}", id)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        webTestClient.get()
+                .uri(CUSTOMER_URI + "/{id}", id)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 }

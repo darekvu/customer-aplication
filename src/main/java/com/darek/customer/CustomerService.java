@@ -38,7 +38,7 @@ public class CustomerService {
     }
 
     public void deleteCustomer(Long customerId) {
-        if (customerDao.existsPersonWithId(customerId)) {
+        if (!customerDao.existsPersonWithId(customerId)) {
             throw new ResourceNotFoundException("Customer with id [%s]".formatted(customerId));
         }
         customerDao.deleteCustomer(customerId);

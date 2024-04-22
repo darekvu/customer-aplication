@@ -30,7 +30,7 @@ public class CustomerController {
         customerService.addCustomer(request);
     }
     @DeleteMapping("{customer_id}")
-    public void registerCustomer(@PathVariable("customer_id")Long id) {
+    public void deleteCustomer(@PathVariable("customer_id")Long id) {
         customerService.deleteCustomer(id);
     }
 
