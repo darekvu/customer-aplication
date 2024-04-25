@@ -110,7 +110,7 @@ class CustomerServiceTest {
         // Given
         Long id = 3L;
         // When
-        when(customerDao.existsPersonWithId(id)).thenReturn(false);
+        when(customerDao.existsPersonWithId(id)).thenReturn(true);
         // Then
         underTest.deleteCustomer(id);
         then(customerDao).should().deleteCustomer(id);
@@ -121,7 +121,7 @@ class CustomerServiceTest {
         // Given
         Long id = 3L;
         // When
-        when(customerDao.existsPersonWithId(id)).thenReturn(true);
+        when(customerDao.existsPersonWithId(id)).thenReturn(false);
         // Then
         assertThatThrownBy(() -> underTest.deleteCustomer(id))
                 .isInstanceOf(ResourceNotFoundException.class)
